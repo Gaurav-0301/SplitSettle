@@ -5,6 +5,7 @@ import GoogleLogin from './components/GoogleLogin'
 import Dashboard from './components/Dashboard'
 import NotFoundPage from './components/NotFoundPage';
 import LoginPage from './components/LoginPage';
+import SignupPage from './components/SignupPage';
 
 
 
@@ -24,6 +25,7 @@ const App = () => {
       <Routes>
        
         <Route path='/' element={<LoginPage/>}></Route>
+        <Route path='/signup' element={<SignupPage/>}></Route>
         <Route path='/googleLogin' element={<GoogleAuthWrapper/>}></Route>
         <Route path='/dashboard' element={<Dashboard/>}></Route>
         <Route path='*' element={<NotFoundPage/>}></Route>
