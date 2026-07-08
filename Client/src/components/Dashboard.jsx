@@ -18,7 +18,7 @@ const Dashboard = () => {
   }
   return (
     <div>
-      <h1>Dashboard</h1>
+      <h1 class="text-3xl font-bold underline">Dashboard</h1>
       <h2>{userInfo?.name}</h2>
       <h3>{userInfo?.email}</h3>
       <img src={userInfo?.image} alt={userInfo?.email}/>

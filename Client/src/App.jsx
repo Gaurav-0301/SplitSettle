@@ -4,6 +4,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import GoogleLogin from './components/GoogleLogin'
 import Dashboard from './components/Dashboard'
 import NotFoundPage from './components/NotFoundPage';
+import LoginPage from './components/LoginPage';
+
 
 
 const App = () => {
@@ -20,8 +22,9 @@ const App = () => {
     <>
       <BrowserRouter>
       <Routes>
-        <Route path='/login' element={<GoogleAuthWrapper/>}></Route>
-        <Route path='/' element={<GoogleAuthWrapper/>}></Route>
+       
+        <Route path='/' element={<LoginPage/>}></Route>
+        <Route path='/googleLogin' element={<GoogleAuthWrapper/>}></Route>
         <Route path='/dashboard' element={<Dashboard/>}></Route>
         <Route path='*' element={<NotFoundPage/>}></Route>
         
