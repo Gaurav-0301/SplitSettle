@@ -1,31 +1,28 @@
-import { useState } from 'react';
-import { MessagesSquare, User, Mail, Lock, EyeOff, Eye, Loader } from 'lucide-react';
+import { useState ,useEffect} from 'react';
+import { MessagesSquare, User, Mail, Lock, EyeOff, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom'; 
 import { toast } from 'react-hot-toast';
 import AuthImagePattern from './AuthImage';
+import OtpModal from './OtpModal';
+import { authStore } from './store/AuthStore';
+
 
 const SignupPage = () => {
-  // NOTE: Swap these with your authentic auth hook context if using an external state store (e.g., Zustand)
-  const [isSignUp, setIsSignUp] = useState(false);
-  const signUp = async (data) => {
-    setIsSignUp(true);
-    console.log("Signing up with: ", data);
-    setTimeout(() => {
-      setIsSignUp(false);
-      toast.success("Account simulation successful!");
-    }, 1500);
-  };
-
+  // Corrected destructuring casing to match the Zustand authStore defaults
+  const { signUp, isSignUp } = authStore();
+  const { verifyOtp,isAuthenticated} = authStore();
+  
   const [formData, setFormData] = useState({
-    name: "",
+    userName: "",
     email: "",
     password: "",
   });
-
+  const [isBuffer, setIsBuffer] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   const validateForm = () => {
-    if (!formData.name.trim()) {
+    if (!formData.userName.trim()) {
       toast.error("Name is required");
       return false;
     }
@@ -44,10 +41,35 @@ const SignupPage = () => {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     const success = validateForm();
-    if (success === true) signUp(formData);
+    if (success === true) {
+      console.log(formData);
+       setIsBuffer(true);
+      await signUp(formData);
+     
+      
+    }
+  };
+ useEffect(() => {
+  console.log("isSignUp:", isSignUp);
+  if (isSignUp) {
+    setShowOtpModal(true);
+    setIsBuffer(false);
+
+  }
+}, [isSignUp]);
+
+  const handleVerifyOtp = async (otpCode) => {
+    console.log("Submitting sign up registration sequence: ", { ...formData, otp: otpCode });
+    try {
+      // Dispatch sign up state changes along with the 6-digit OTP code to the backend
+      await verifyOtp({ ...formData, otp: otpCode });
+      
+    } catch (error) {
+      console.error("Registration verification failed:", error);
+    }
   };
 
   return (
@@ -84,8 +106,8 @@ const SignupPage = () => {
                   type="text"
                   className="w-full pl-11 pr-4 py-3 bg-white/[0.04] border border-white/[0.1] focus:border-[#34D399] focus:ring-1 focus:ring-[#34D399] rounded-xl text-white placeholder-gray-500 font-medium outline-none transition-all duration-300"
                   placeholder="John Doe"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  value={formData.userName}
+                  onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
                 />
               </div>
             </div>
@@ -140,20 +162,20 @@ const SignupPage = () => {
             </div>
 
             {/* Submit Button */}
-            <button 
-              type="submit" 
-              className="w-full py-3 mt-2 bg-gradient-to-r from-[#A7F3D0] to-[#10B981] hover:from-[#86EFAC] hover:to-[#059669] text-black font-bold rounded-xl shadow-[0_0_20px_rgba(52,211,153,0.2)] hover:shadow-[0_0_25px_rgba(52,211,153,0.35)] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2" 
-              disabled={isSignUp}
-            >
-              {isSignUp ? (
-                <>
-                  <Loader className="size-5 animate-spin text-black" />
-                  Creating account...
-                </>
-              ) : (
-                "Create Account"
-              )}
-            </button>
+            <button
+             type="submit"
+             
+             className="w-full py-3 mt-2 bg-gradient-to-r from-[#A7F3D0] to-[#10B981] hover:from-[#86EFAC] hover:to-[#059669] text-black font-bold rounded-xl flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+     >
+       {isBuffer ? (
+    <>
+      <span className="loading loading-spinner loading-sm"></span>
+      Sending OTP...
+    </>
+     ) : (
+    "Create Account"
+  )}
+</button>
           </form>
 
           {/* Login Redirection Link */}
@@ -173,6 +195,15 @@ const SignupPage = () => {
         title="Join our community"
         Subtitle1="Connect with friends, share moments and stay in touch with your "
         subtitle2="loved ones !!."
+      />
+
+      {/* Extracted Glassmorphic OTP Layer Component */}
+      <OtpModal 
+        isOpen={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        email={formData.email}
+        onVerify={handleVerifyOtp}
+        isLoggingIn={isAuthenticated}
       />
     </div>
   );
