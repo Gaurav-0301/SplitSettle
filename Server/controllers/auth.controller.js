@@ -58,7 +58,7 @@ const signUp = async (req, res) => {
         if (isMatch) {
             return res.status(400).json({
                 success: false,
-                message: "Account already exist with this eamil",
+                message: "Account already exist with this email",
             });
         }
 
@@ -158,9 +158,9 @@ const otpVerification = async (req, res) => {
                 message: "Invalid Request"
             });
         }
-        const otpCreatedAt=new Date(activeOtp.createdAt()).getTime();
+        const otpCreatedAt=new Date(activeOtp.createdAt).getTime();
         const otpValidTime=10*60*1000;
-        if(Date.now>(otpCreatedAt+otpValidTime)){
+        if(Date.now()>(otpCreatedAt+otpValidTime)){
             await otpModel.deleteOne({userId:id});
              return res.status(400).json({
                 success:false,
