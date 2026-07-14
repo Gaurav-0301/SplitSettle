@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ShieldCheck, Loader } from 'lucide-react';
 
 const OtpModal = ({ isOpen, onClose, email, onVerify, isAuthenticated }) => {
+  // Configured to support a 6-digit verification pin layout
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [timer, setTimer] = useState(120);
   const [canResend, setCanResend] = useState(false);
@@ -28,6 +29,7 @@ const OtpModal = ({ isOpen, onClose, email, onVerify, isAuthenticated }) => {
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
 
+    // Auto-focus move logic targeted for array lengths up to index 5
     if (index < 5 && inputRefs.current[index + 1]) {
       inputRefs.current[index + 1].focus();
     }

@@ -1,17 +1,16 @@
 import { useState ,useEffect} from 'react';
 import { MessagesSquare, User, Mail, Lock, EyeOff, Eye } from 'lucide-react';
-import { Link } from 'react-router-dom'; 
+import { Link, Navigate, useNavigate } from 'react-router-dom'; 
 import { toast } from 'react-hot-toast';
 import AuthImagePattern from './AuthImage';
 import OtpModal from './OtpModal';
-import { authStore } from './store/AuthStore';
-
+import { authStore } from '../store/AuthStore';
 
 const SignupPage = () => {
   // Corrected destructuring casing to match the Zustand authStore defaults
-  const { signUp, isSignUp } = authStore();
-  const { verifyOtp,isAuthenticated} = authStore();
-  
+
+  const { verifyOtp,isAuthenticated,isAccess,checkAuth,signUp, isSignUp} = authStore();
+  const navigate=useNavigate();
   const [formData, setFormData] = useState({
     userName: "",
     email: "",
@@ -41,36 +40,47 @@ const SignupPage = () => {
     return true;
   };
 
-  const handleSubmit = async(e) => {
-    e.preventDefault();
-    const success = validateForm();
-    if (success === true) {
-      console.log(formData);
-       setIsBuffer(true);
-      await signUp(formData);
-     
-      
-    }
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!validateForm()) return;
+
+  try {
+    setIsBuffer(true);
+    await signUp(formData);
+  } catch (error) {
+    setIsBuffer(false);
+  }
+};
+ 
+
  useEffect(() => {
-  console.log("isSignUp:", isSignUp);
   if (isSignUp) {
     setShowOtpModal(true);
     setIsBuffer(false);
-
+  } else {
+    setShowOtpModal(false);
   }
 }, [isSignUp]);
 
+useEffect(() => {
+  if (isAccess) {
+    navigate("/dashboard", { replace: true });
+  }
+}, [isAccess, navigate]);
+
   const handleVerifyOtp = async (otpCode) => {
-    console.log("Submitting sign up registration sequence: ", { ...formData, otp: otpCode });
-    try {
-      // Dispatch sign up state changes along with the 6-digit OTP code to the backend
-      await verifyOtp({ ...formData, otp: otpCode });
-      
-    } catch (error) {
-      console.error("Registration verification failed:", error);
-    }
-  };
+  try {
+    await verifyOtp({
+      ...formData,
+      otp: otpCode,
+    });
+
+    setShowOtpModal(false);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-black text-white relative overflow-hidden">
@@ -162,17 +172,17 @@ const SignupPage = () => {
             </div>
 
             {/* Submit Button */}
-            <button
-             type="submit"
-             
-             className="w-full py-3 mt-2 bg-gradient-to-r from-[#A7F3D0] to-[#10B981] hover:from-[#86EFAC] hover:to-[#059669] text-black font-bold rounded-xl flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-     >
-       {isBuffer ? (
+       <button
+  type="submit"
+  disabled={isBuffer}
+  className="w-full py-3 mt-2 bg-gradient-to-r from-[#A7F3D0] to-[#10B981] hover:from-[#86EFAC] hover:to-[#059669] text-black font-bold rounded-xl flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+>
+  {isBuffer ? (
     <>
       <span className="loading loading-spinner loading-sm"></span>
       Sending OTP...
     </>
-     ) : (
+  ) : (
     "Create Account"
   )}
 </button>

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import AuthImagePattern from './AuthImage';
 import OtpModal from './OtpModal';
 import GoogleAuthWrapper from './GoogleAuthWrapper';
-import { authStore } from './store/AuthStore';
+import { authStore } from '../store/AuthStore';
 
 const LoginPage = () => {
   const {signIn,isSignIn} = authStore();

@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 const AuthImagePattern = ({ title, Subtitle1, subtitle2 }) => {
   return (
