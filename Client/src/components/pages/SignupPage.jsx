@@ -1,6 +1,6 @@
 import { useState ,useEffect} from 'react';
 import { MessagesSquare, User, Mail, Lock, EyeOff, Eye } from 'lucide-react';
-import { Link, Navigate, useNavigate } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 import { toast } from 'react-hot-toast';
 import AuthImagePattern from './AuthImage';
 import OtpModal from './OtpModal';
@@ -9,7 +9,7 @@ import { authStore } from '../store/AuthStore';
 const SignupPage = () => {
   // Corrected destructuring casing to match the Zustand authStore defaults
 
-  const { verifyOtp,isAuthenticated,isAccess,checkAuth,signUp, isSignUp} = authStore();
+  const { verifyOtp,isAuthenticated,signUp, isSignUp} = authStore();
   const navigate=useNavigate();
   const [formData, setFormData] = useState({
     userName: "",
@@ -64,10 +64,10 @@ const SignupPage = () => {
 }, [isSignUp]);
 
 useEffect(() => {
-  if (isAccess) {
+  if (isAuthenticated) {
     navigate("/dashboard", { replace: true });
   }
-}, [isAccess, navigate]);
+}, [isAuthenticated, navigate]);
 
   const handleVerifyOtp = async (otpCode) => {
   try {

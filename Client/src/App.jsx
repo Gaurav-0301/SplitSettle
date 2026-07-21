@@ -7,12 +7,19 @@ import LoginPage from './components/pages/LoginPage';
 import SignupPage from './components/pages/SignupPage';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ProtectedRoute';
+import { authStore } from './components/store/AuthStore';
+import { useEffect } from 'react';
 
 
 
 const App = () => {
 
- 
+ const { checkAuth } = authStore();
+
+useEffect(() => {
+    checkAuth();
+}, []);
+
   return (
     <>
       <BrowserRouter>

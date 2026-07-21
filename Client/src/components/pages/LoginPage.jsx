@@ -1,35 +1,60 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MessagesSquare, Mail, Lock, EyeOff, Eye } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, replace, useNavigate } from 'react-router-dom';
 import AuthImagePattern from './AuthImage';
 import OtpModal from './OtpModal';
 import GoogleAuthWrapper from './GoogleAuthWrapper';
 import { authStore } from '../store/AuthStore';
 
 const LoginPage = () => {
-  const {signIn,isSignIn} = authStore();
+  const {signIn, verifyOtp,isSignIn,isAuthenticated} = authStore();
   const [isLoggingIn,setIsLoggingIn]=useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const navigate=useNavigate();
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
     if (formData.email && formData.password) {
+      setIsLoggingIn(true);
       signIn(formData);
-      setShowOtpModal(isSignIn);
+      
+    }else{
+      setIsLoggingIn(false);
     }
   };
 
-  const handleVerifyOtp = async (otpCode) => {
-    setIsLoggingIn(true);
-    console.log("Submitting login sequence: ", { ...formData, otp: otpCode });
-    
-    setTimeout(() => {
-      setIsLoggingIn(false);
+   useEffect(() => {
+    if (isSignIn) {
+      setShowOtpModal(true);
+      setIsLoggingIn(false)
+    } else {
       setShowOtpModal(false);
-    }, 1500);
-  };
+      setIsLoggingIn(false);
+    }
+  }, [isSignIn]);
+
+
+
+  const handleVerifyOtp = async (otpCode) => {
+  try {
+    await verifyOtp({
+      ...formData,
+      otp: otpCode,
+    });
+
+    setShowOtpModal(false);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+useEffect(()=>{
+  if(isAuthenticated){
+    navigate("/dashboard" ,{replace:true});
+  }
+},[navigate,isAuthenticated])
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-black text-white relative overflow-hidden">
@@ -94,9 +119,20 @@ const LoginPage = () => {
               </div>
             </div>
 
-            <button type="submit" className="w-full py-3 bg-gradient-to-r from-[#A7F3D0] to-[#10B981] hover:from-[#86EFAC] hover:to-[#059669] text-black font-bold rounded-xl transition-all duration-300">
-              Sign in
-            </button>
+            <button
+  type="submit"
+  disabled={isLoggingIn}
+  className="w-full py-3 mt-2 bg-gradient-to-r from-[#A7F3D0] to-[#10B981] hover:from-[#86EFAC] hover:to-[#059669] text-black font-bold rounded-xl flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+>
+  {isLoggingIn ? (
+    <>
+      <span className="loading loading-spinner loading-sm"></span>
+      Sending OTP...
+    </>
+  ) : (
+    "Login"
+  )}
+</button>
           </form>
 
           <div className="relative flex py-2 items-center">

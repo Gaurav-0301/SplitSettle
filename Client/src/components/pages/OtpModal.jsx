@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { ShieldCheck, Loader } from 'lucide-react';
+import { authStore } from '../store/AuthStore';
 
 const OtpModal = ({ isOpen, onClose, email, onVerify, isAuthenticated }) => {
   // Configured to support a 6-digit verification pin layout
   const [otp, setOtp] = useState(new Array(6).fill(""));
-  const [timer, setTimer] = useState(120);
+  const [timer, setTimer] = useState(10);
   const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef([]);
+  const {resendOtp}=authStore();
+  
 
   useEffect(() => {
     let interval = null;
@@ -50,6 +53,9 @@ const OtpModal = ({ isOpen, onClose, email, onVerify, isAuthenticated }) => {
   };
 
   const handleResendOtp = () => {
+    if(canResend){
+      resendOtp({email});
+    }
     if (!canResend) return;
     setTimer(120);
     setCanResend(false);
