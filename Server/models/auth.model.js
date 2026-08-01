@@ -18,7 +18,11 @@ const authSchema = new mongoose.Schema(
     isVerified:{
       type:Boolean,
       default:false,
-    }
+    },
+    profilePic: {
+      type: String,
+      default: "",
+    },
     
   },
   {

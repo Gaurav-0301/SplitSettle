@@ -5,7 +5,9 @@ const otp=require("../utils/otp.util")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const otpModel=require("../models/otp.model");
-const sendOtpMail=require("../utils/email.util")
+const sendOtpMail=require("../utils/email.util");
+const { default: cloudinary } = require("../utils/cloudinary");
+
 
 
 const getMe= async (req, res) => {
@@ -31,8 +33,10 @@ const getMe= async (req, res) => {
             success: true,
             message:"User fetch successfully",
             userCredential:  {
+                userId:guest.id,
                 userName:guest.userName,
                 email:guest.email,
+                profilePic:guest.profilePic
 
             },
         });
@@ -291,9 +295,6 @@ const otpVerification = async (req, res) => {
     }
 }
 
-
-
-
 const accessToken = async (req, res) => {
   try {
     const { refreshToken } = req.cookies;
@@ -360,62 +361,100 @@ const accessToken = async (req, res) => {
   }
 };
 
-
-
-
-
-const logout=async(req,res)=>{
-try {
-    const {refreshToken}=req.cookies;
-    const {id}=req.params;
-    if(!refreshToken){
-        return res.status(400).json({
-           success:false,
-           message:"No Active refreshToken found"
-        });
-    }
-      
-       const currentUser=await user.findOne({id});
-        const refreshTokenHash=await crypto.createHash("sha256").update(refreshToken).digest("hex")
-
-        const session=await sessionModel.findOne(
-           { 
-            refreshTokenHash,
-            revoked:false,
-        }
-        );
-     
-        if(!session){
+const logout = async (req, res) => {
+    try {
+        const { refreshToken } = req.cookies;
+        
+        if (!refreshToken) {
             return res.status(400).json({
-                success:false,
-                message:"session not found"
+                success: false,
+                message: "No Active refreshToken found"
             });
         }
-            session.revoked=true;
-            await session.save();
+        
+        const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
 
-            currentUser.isVerified=false;
-            await currentUser.save();
+        const session = await sessionModel.findOne({ 
+            refreshTokenHash,
+            revoked: false,
+        });
+     
+        if (!session) {
+            return res.status(400).json({
+                success: false,
+                message: "Session not found"
+            });
+        }
 
+        // Revoke the session
+        session.revoked = true;
+        await session.save();
 
-         res.clearCookie("refreshToken", {
-          httpOnly: true,
-        secure: process.env.NODE_ENV === "production"
-       });
+        // Clear the cookie properly
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict"
+        });
          
+        return res.status(200).json({
+            success: true,
+            message: "Logout successfully"
+        });
+        
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Failed to Logout: " + error.message
+        });
+    }
+};
+
+const updateProfile = async (req, res) => {
+    try {
+        const { profilePic, userName } = req.body;
+        const { id } = req.params;
+        let updatedData = {};
+
+        if (userName) {
+            updatedData.userName = userName;
+        }
+       
+        if (profilePic) {
+            const uploadRes = await cloudinary.uploader.upload(profilePic, {
+                folder: 'profile_pics'
+            });
+            updatedData.profilePic = uploadRes.secure_url;
+        }
+
+        
+        const updatedUser = await user.findByIdAndUpdate(
+            id,
+            updatedData,
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
         res.status(200).json({
-            success:true,
-            message:"Logout successfully"
-        })
-    
-} catch (error) {
-    res.status(400).json({
-        success:false,
-        message:"Failed to Logout "+error
-    })
-}
-}
+            success: true,
+            updatedData: updatedUser 
+        });
+
+    } catch (error) {
+        console.error("Update profile error:", error);
+        res.status(400).json({
+            success: false,
+            message: "update profile fail: " + error.message
+        });
+    }
+};
 
 
 
-module.exports={getMe,signUp,logout,otpVerification,accessToken,login,resendOtp};
+module.exports={getMe,signUp,logout,otpVerification,accessToken,login,resendOtp,updateProfile};
