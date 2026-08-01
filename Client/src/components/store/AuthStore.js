@@ -107,4 +107,8 @@ export const authStore = create((set, get) => ({
             console.log("checkAuth Error: " + err);
         }
     },
+
+    logout:async()=>{
+   
+    },
 }));

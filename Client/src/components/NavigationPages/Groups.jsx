@@ -13,7 +13,7 @@ import {
   Lock
 } from 'lucide-react';
 
-const Dashboard = () => {
+const Groups = () => {
   const [notifyEmail, setNotifyEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [activeTab, setActiveTab] = useState('completed');
@@ -235,4 +235,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Groups;
