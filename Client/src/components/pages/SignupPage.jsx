@@ -65,7 +65,7 @@ const SignupPage = () => {
 
 useEffect(() => {
   if (isAuthenticated) {
-    navigate("/dashboard", { replace: true });
+    navigate("/groups", { replace: true });
   }
 }, [isAuthenticated, navigate]);
 

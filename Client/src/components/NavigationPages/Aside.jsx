@@ -8,16 +8,16 @@ import {
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
-const AsideNav = ({ authUser }) => {
+const AsideNav = ({ user }) => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // Determine avatar vs name initial logic
-  const hasName = Boolean(authUser?.fullName && authUser.fullName.trim() !== "");
-  const nameInitial = hasName ? authUser.fullName.trim().charAt(0).toUpperCase() : "";
+  // Match schema property: userName instead of fullName
+  const hasName = Boolean(user?.userName && user.userName.trim() !== "");
+  const nameInitial = hasName ? user.userName.trim().charAt(0).toUpperCase() : "";
 
   return (
-    <aside className="fixed lg:static inset-y-0 left-0 z-30 h-full w-16 bg-black border-r border-[#2ee6a8]/25 flex flex-col justify-between items-center py-4 shrink-0">
+    <aside className="h-full w-16 bg-black border-r border-[#2ee6a8]/25 flex flex-col justify-between items-center py-4 shrink-0 z-30">
       {/* Top Icons */}
       <div className="flex flex-col items-center space-y-4 w-full">
         <Link 
@@ -34,13 +34,13 @@ const AsideNav = ({ authUser }) => {
         <Link 
           to="/groups" 
           title="Groups" 
-          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+          className={`w-10 h-10 rounded-xl my-3 flex items-center justify-center transition-all ${
             currentPath === '/groups' 
               ? 'bg-[#2ee6a8]/15 text-[#2ee6a8] border border-[#2ee6a8]/40 shadow-inner' 
               : 'text-white/70 hover:text-white hover:bg-[#2ee6a8]/10'
           }`}
         >
-          <Users className="w-5 h-5 text-[#2ee6a8]" />
+          <Users className="w-5 h-5  text-[#2ee6a8]" />
         </Link>
         <Link 
           to="/settle" 
@@ -66,7 +66,7 @@ const AsideNav = ({ authUser }) => {
         </Link>
       </div>
 
-      {/* Bottom Icons: Settings Profile & User Avatar */}
+      {/* Bottom Icons: Settings & User Avatar */}
       <div className="flex flex-col items-center space-y-3 w-full">
         <Link 
           to="/profile" 
@@ -81,14 +81,14 @@ const AsideNav = ({ authUser }) => {
         </Link>
 
         <div className="w-full px-2 flex justify-center pt-2 border-t border-[#2ee6a8]/20">
-          <Link to="/profile" title={authUser?.fullName || "Profile"}>
+          <Link to="/profile" title={user?.userName || "Profile"}>
             {hasName ? (
               <div className="w-9 h-9 rounded-full bg-[#2ee6a8]/20 border border-[#2ee6a8]/40 flex items-center justify-center text-[#2ee6a8] font-bold text-xs shadow">
                 {nameInitial}
               </div>
             ) : (
               <img
-                src={authUser?.profilePic || "/avatar.png"}
+                src={user?.profilePic || "/avatar.png"}
                 alt="Profile"
                 className="w-9 h-9 rounded-full object-cover border border-[#2ee6a8]/40 shadow"
               />
@@ -98,6 +98,10 @@ const AsideNav = ({ authUser }) => {
       </div>
     </aside>
   );
+};
+
+AsideNav.defaultProps = {
+  user: null,
 };
 
 export default AsideNav;

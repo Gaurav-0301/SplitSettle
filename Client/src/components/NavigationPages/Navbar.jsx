@@ -21,21 +21,7 @@ const Navbar = () => {
               </Link>
             </div>
 
-            <div className='flex items-center gap-2 pr-4'>
-              {isAuthenticated && (
-                <>
-                  <Link 
-                    to={"/profile"}
-                    className='btn btn-sm transition-colors flex gap-2 items-center bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold border-none' 
-                  >
-                    <User className="w-4 h-4"/>
-                    <span className='hidden sm:inline'>Profile</span>
-                  </Link>
-
-                  
-                </>
-              )}
-            </div>
+           
           </div>
         </div>
       </header>

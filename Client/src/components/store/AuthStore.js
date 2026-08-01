@@ -9,6 +9,8 @@ export const authStore = create((set, get) => ({
     userId: null,
     isAccess: false,
     isCheckingAuth:true,
+    user:"",
+    isUpdatingProfile:false,
 
     signIn: async (data) => {
         set({ isSignIn: true });
@@ -96,7 +98,8 @@ export const authStore = create((set, get) => ({
 
             const res = await axiosInstance.get("/auth/getMe");
             if (res.data?.success) {
-                set({ isAuthenticated: true,isCheckingAuth: false,user: res.data.userCredential });
+                set({ isAuthenticated: true,isCheckingAuth: false, user: res.data.userCredential });
+               
                 
             } else {
                 set({ isAuthenticated: false, isCheckingAuth: false });
@@ -109,6 +112,51 @@ export const authStore = create((set, get) => ({
     },
 
     logout:async()=>{
-   
+     try {
+       const { userId } = get(); 
+        const res=await axiosInstance.get(`/auth/logout/${userId}`);
+        localStorage.removeItem("AccessToken");
+        set({ isAuthenticated: false,isCheckingAuth: false,user:"" });
+        if(res.data?.success){
+        toast.success(res.data?. message);
+        }
+        
+
+
+     } catch (error) {
+        console.log("logout fails "+error);
+         toast.error("logout fails "+error);
+     }
     },
+
+    updateProfile: async (data) => {
+    const { user } = get();
+    // Since your backend uses Mongoose, the ID field is typically _id
+    const userId = user?.userId || user?.id;
+
+    if (!userId) {
+        toast.error("User session not found. Please log in again.");
+        return;
+    }
+
+    set({ isUpdatingProfile: true });
+
+    try {
+        const res = await axiosInstance.put(`/auth/updateProfile/${userId}`, data);
+        const resData = res.data;
+
+        if (resData?.success) {
+            // Fix: Access updatedData directly from the response root
+            set({ 
+                user: resData.updatedData, 
+                isUpdatingProfile: false 
+            });
+            toast.success("Profile Updated Successfully !! ");
+        }
+    } catch (error) {
+        console.log("profile updating fails " + error);
+        toast.error("Profile Updatation Fails !! ");
+        set({ isUpdatingProfile: false });
+    }
+},
 }));

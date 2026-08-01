@@ -52,7 +52,7 @@ const LoginPage = () => {
 
 useEffect(()=>{
   if(isAuthenticated){
-    navigate("/dashboard" ,{replace:true});
+    navigate("/groups" ,{replace:true});
   }
 },[navigate,isAuthenticated])
 
