@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const otpModel=require("../models/otp.model");
 const sendOtpMail=require("../utils/email.util");
-const { default: cloudinary } = require("../utils/cloudinary");
+const cloudinary = require("../utils/cloudinary");
 
 
 
@@ -448,6 +448,7 @@ const updateProfile = async (req, res) => {
 
     } catch (error) {
         console.error("Update profile error:", error);
+
         res.status(400).json({
             success: false,
             message: "update profile fail: " + error.message
