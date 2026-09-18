@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const otpModel=require("../models/otp.model");
 const sendOtpMail=require("../utils/email.util");
 const cloudinary = require("../utils/cloudinary");
+const uid=require("../utils/uid")
 
 
 
@@ -36,7 +37,8 @@ const getMe= async (req, res) => {
                 userId:guest.id,
                 userName:guest.userName,
                 email:guest.email,
-                profilePic:guest.profilePic
+                profilePic:guest.profilePic,
+                uid:guest.uid,
 
             },
         });
@@ -144,6 +146,17 @@ const signUp = async (req, res) => {
             userId:newUser._id,
             otp:hashedOtp,
          })
+
+        const generatedUid = uid(newUser);
+         console.log(generatedUid);
+
+        const userId = newUser._id;
+
+        const updatedUser = await user.findByIdAndUpdate(
+        userId,
+        { uid: generatedUid },
+        { new: true }
+);
          
         res.status(200).json({
             success: true,
@@ -188,15 +201,29 @@ const login=async(req,res)=>{
         var generatedOtp=otp();
         const hashedOtp=await bcrypt.hash(generatedOtp,10);
         await sendOtpMail(email,generatedOtp);
+
+        const previousOtp=await otpModel.findOne({userId:currentUser._id});
+   
+     if(previousOtp){
+          const activeOtp=await otpModel.findOneAndUpdate(
+            {userId:currentUser._id},
+            {otp:hashedOtp},
+            {new:true},
+         )
+     }else{
          const activeOtp=await otpModel.create({
             userId:currentUser._id,
             otp:hashedOtp,
-         })
+            
+     })
+     }
+        
+         
 
             res.status(201).json({
                 success:true,
                 message:"verification OTP is send.Please verify",
-                user_id:currentUser._id,
+                user_id:currentUser._id.toString(),
             })
        
     } catch (error) {
@@ -285,6 +312,7 @@ const otpVerification = async (req, res) => {
             success: true,
             message: "User signup successfully",
             accessToken,
+            user:currentUser,
         });
 
     } catch (error) {
@@ -455,6 +483,7 @@ const updateProfile = async (req, res) => {
         });
     }
 };
+
 
 
 

@@ -23,6 +23,14 @@ const authSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+
+     uid: {
+      type: String,
+      default:"",
+      unique: true,
+      index: true
+    },
+    
     
   },
   {

@@ -171,12 +171,14 @@ const Profile = () => {
           {/* UID Field */}
           <div className="flex flex-col space-y-1.5">
             <label className="text-xs uppercase tracking-wider text-[#2ee6a8] font-medium flex items-center gap-2">
-              <ShieldCheck className="w-3.5 h-3.5" /> User ID (UID)
+              <Mail className="w-3.5 h-3.5" /> UID
             </label>
-            <div className="bg-black border border-[#2ee6a8]/20 rounded-xl px-4 py-3 text-white/70 font-mono text-xs select-all">
-              {user?._id || "Unavailable"}
+            <div className="bg-black border border-[#2ee6a8]/20 rounded-xl px-4 py-3 text-white text-sm">
+              {user?.uid || "Not Generated"}
             </div>
           </div>
+
+        </div>
 
           {/* Email Field */}
           <div className="flex flex-col space-y-1.5">
@@ -201,7 +203,7 @@ const Profile = () => {
         </div>
 
       </div>
-    </div>
+    
   );
 };
 
