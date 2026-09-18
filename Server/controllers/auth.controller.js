@@ -34,7 +34,7 @@ const getMe= async (req, res) => {
             success: true,
             message:"User fetch successfully",
             userCredential:  {
-                userId:guest.id,
+                userId:guest._id.toString(),
                 userName:guest.userName,
                 email:guest.email,
                 profilePic:guest.profilePic,

@@ -7,6 +7,7 @@ const googleAuthRouter=require("./routes/googleAuth.router")
 const cors=require("cors")
 
 const cookieParser = require("cookie-parser")
+const groupRouter = require("./routes/group.router")
 const app=express()
 console.log(process.env.PORT)
 
@@ -23,6 +24,7 @@ const PORT=process.env.PORT
 
 app.use("/",authRouter);
 app.use("/auth",googleAuthRouter);
+app.use("/group",groupRouter);
 
 app.get("/",(req,res)=>{
     res.send("Server is live")
