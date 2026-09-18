@@ -131,8 +131,9 @@ export const authStore = create((set, get) => ({
 
     updateProfile: async (data) => {
     const { user } = get();
-    // Since your backend uses Mongoose, the ID field is typically _id
+  
     const userId = user?.userId || user?.id;
+    console.log(userId);
 
     if (!userId) {
         toast.error("User session not found. Please log in again.");
