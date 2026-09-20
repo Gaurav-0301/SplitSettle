@@ -3,7 +3,7 @@ const Group = require("../models/group.model");
 const mongoose =require("mongoose")
 
 const searchUser=async(req,res)=>{
-    const {uid}=req.query;
+    const {uid}=req.params;
 
     try {
          if (!uid) {
@@ -42,12 +42,12 @@ const createGroup=async(req,res)=>{
     const creatorId=req.user.id;
 
     try {
-        const {name,members}=req.body;
+        const {grpName,members}=req.body;
 
-        if(!name || !name.trim()){
+        if(!grpName || !grpName.trim()){
             return res.status(500).json({
                 success:false,
-                message:"Name required"
+                message:" Group Name required"
             })
         }
 
@@ -91,7 +91,7 @@ console.log("memberIds:", memberIds);
 
     const newGroup=await Group.create(
         {
-            name:name.trim(),
+           grpName:grpName.trim(),
             createdBy:creatorId,
             admins:[
                 creatorId
@@ -118,8 +118,89 @@ console.log("memberIds:", memberIds);
     }
 }
 
+const getMyGroups=async(req,res)=>{
+ try {
+    const userId=req.user.id;
+
+    const groups=await Group.find({
+        members:userId
+    }).populate(
+        "createdBy",
+        "uid userName profilePic"
+
+    ).populate(
+        "admins",
+        "uid userName profilePic"
+    ).pupulate(
+        "members",
+        "uid userName profilePic"
+    ).sort(
+        {updatedAt:-1}
+    )
+
+    return res.status(201).json({
+        success:true,
+        groups
+
+    })
+    
+ } catch (error) {
+    console.log("Error occur at getMyGroups "+error);
+    return res.status(500).json({
+        success:true,
+        message:"Error occur at getMyGroups "+error
+    })
+ }
+}
+
+const updateGroupProfile = async (req, res) => {
+    try {
+        const { groupPic, groupName } = req.body;
+        const { id } = req.params;
+        let updatedData = {};
+
+        if (grpName) {
+            updatedData.grpName = grpName;
+        }
+       
+        if (groupPic) {
+            const uploadRes = await cloudinary.uploader.upload(profilePic, {
+                folder: 'Group_pics'
+            });
+            updatedData.profilePic = uploadRes.secure_url;
+        }
+
+        
+        const updatedGroup= await Group.findByIdAndUpdate(
+            id,
+            updatedData,
+            { new: true }
+        );
+
+        if (!updatedGroup) {
+            return res.status(404).json({
+                success: false,
+                message: "Group not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            updatedData: updatedGroup
+        });
+
+    } catch (error) {
+        console.error("Update Group error:", error);
+
+        res.status(400).json({
+            success: false,
+            message: "update Group fail: " + error.message
+        });
+    }
+};
+
 
 
 module.exports = {
-    searchUser,createGroup
+    searchUser,createGroup,getMyGroups,updateGroupProfile
 };

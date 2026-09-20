@@ -3,7 +3,7 @@ const User = require("./auth.model");
 
 const groupSchema=mongoose.Schema({
 
-    name:{
+    grpName:{
         type:String,
         required:true,
         trim:true,
@@ -26,7 +26,11 @@ const groupSchema=mongoose.Schema({
             type:mongoose.Schema.Types.ObjectId,
             ref:"User"
         }
-    ]
+    ],
+    groupPic:{
+        type:String,
+        default:""
+    }
       
     
 }
