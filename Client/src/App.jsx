@@ -10,6 +10,7 @@ import Navbar from './components/NavigationPages/Navbar';
 import Profile from './components/NavigationPages/Profile'
 import Groups from './components/NavigationPages/Groups';
 import AsideNav from './components/NavigationPages/Aside';
+import CreateGroupFlow from './components/NavigationPages/CreateGroupsFlow';
 
 const App = () => {
   const { checkAuth, isAuthenticated, user,isUpdatingProfile } = authStore();
@@ -49,6 +50,7 @@ const App = () => {
               <Route element={<ProtectedRoute />}>
                 <Route path="/groups" element={<Groups />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/createGroup" element={<CreateGroupFlow />} />
               </Route>
 
               <Route path='*' element={<NotFoundPage />} />

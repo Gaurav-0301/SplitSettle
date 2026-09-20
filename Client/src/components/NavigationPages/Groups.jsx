@@ -1,235 +1,233 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
- Construction, 
-  Sparkles, 
-  CheckCircle2, 
-  Circle, 
+  Search, 
+  MessageSquare, 
   Send, 
-  Terminal, 
-  ExternalLink,
-  ShieldCheck,
-  MessagesSquare,
-  Zap,
-  Lock
+  Image as ImageIcon, 
+  Smile, 
+  Phone,
+  Video,
+  Info
 } from 'lucide-react';
 
 const Groups = () => {
-  const [notifyEmail, setNotifyEmail] = useState('');
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [activeTab, setActiveTab] = useState('completed');
-  const [terminalLogs, setTerminalLogs] = useState([
-    "INFO: Initializing SplitSettle core components...",
-    "SUCCESS: Glassmorphic UI layout integrated.",
-    "SUCCESS: Pitch-black & Mint-green design rules injected.",
-    "SUCCESS: Secure 6-digit OTP verification module verified."
+  // TODO: Replace this mock state with your Zustand store actions/state later
+  const [chats, setChats] = useState([
+    {
+      _id: 'group_1',
+      name: 'Goa Trip Expenses',
+      lastMessage: 'Alex paid ₹4,500 for hotel booking',
+      time: '12:45 PM',
+      unreadCount: 3,
+      isGroup: true,
+      profilePic: '',
+      members: [
+        { name: 'You' }, 
+        { name: 'Sarah' }, 
+        { name: 'Alex' }
+      ]
+    },
+    {
+      _id: 'group_2',
+      name: 'Flat 402 Rent & Utilities',
+      lastMessage: 'Electricity bill is generated.',
+      time: '11:20 AM',
+      unreadCount: 0,
+      isGroup: true,
+      profilePic: '',
+      members: [
+        { name: 'You' }, 
+        { name: 'Ganesh' }
+      ]
+    },
+    {
+      _id: 'chat_3',
+      name: 'Sarah Jenkins',
+      lastMessage: 'Let me check the receipts.',
+      time: 'Yesterday',
+      unreadCount: 1,
+      isGroup: false,
+      profilePic: ''
+    }
   ]);
 
-  // Simulated live logs to make the page feel functional and dynamic
-  useEffect(() => {
-    const freshLogs = [
-      "DEBUG: Checking SMTP transport connection pool...",
-      "INFO: Optimizing database indexing for multi-person ledger chains...",
-      "SYSTEM: Deployment branch aligned with stable v1.1.0 release.",
-      "DEBUG: Syncing secure Google OAuth token callbacks...",
-      "SUCCESS: Dev pipeline integrity checked - 0 errors found."
-    ];
+  const [activeChat, setActiveChat] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [messageInput, setMessageInput] = useState('');
+  
+  // Local messages mock state (Connect to Zustand later)
+  const [messages, setMessages] = useState([
+    { _id: 'm1', sender: 'Sarah', text: 'Hey, did you calculate the split for yesterday?', time: '12:30 PM', isSender: false },
+    { _id: 'm2', sender: 'You', text: 'Working on it right now, will update shortly.', time: '12:32 PM', isSender: true },
+  ]);
 
-    const interval = setInterval(() => {
-      const randomLog = freshLogs[Math.floor(Math.random() * freshLogs.length)];
-      const timestamp = new Date().toLocaleTimeString();
-      setTerminalLogs(prev => [...prev.slice(-4), `[${timestamp}] ${randomLog}`]);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleNotifySubmit = (e) => {
+  const handleSendMessage = (e) => {
     e.preventDefault();
-    if (notifyEmail.trim()) {
-      setIsSubscribed(true);
-      setNotifyEmail('');
-    }
+    if (!messageInput.trim() || !activeChat) return;
+
+    const newMessage = {
+      _id: Date.now().toString(),
+      sender: 'You',
+      text: messageInput.trim(),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isSender: true
+    };
+
+    setMessages([...messages, newMessage]);
+    setMessageInput('');
   };
 
-  const tasks = [
-    { id: 1, title: "Frosted Glassmorphic Mint Theme", category: "completed", desc: "Premium aesthetic with balanced high-contrast accents completed across all views." },
-    { id: 2, title: "6-Digit Secure OTP verification modal", category: "completed", desc: "Integrated multi-input transition auto-focusing code gates with inline countdowns." },
-    { id: 3, title: "Google Single Sign-On module", category: "completed", desc: "Fully integrated GoogleOAuthProvider context handles." },
-    { id: 4, title: "Real-time ledger engine integration", category: "pending", desc: "Connecting fast transaction indexing matrices to simplify group balance states." },
-    { id: 5, title: "AI Split optimization algorithm", category: "pending", desc: "Developing state path solvers that reduce gross transactional chains into net payouts." },
-    { id: 6, title: "Multi-currency bank-grade settlements", category: "pending", desc: "Integrating Plaid balances with local cross-border rails and web3 USDC options." },
-  ];
-
-  const filteredTasks = tasks.filter(t => t.category === activeTab);
+  // Filter chats based on search input
+  const filteredChats = chats.filter(chat => 
+    chat.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col justify-between relative overflow-hidden font-sans p-6 md:p-12">
+    <div className="flex h-screen w-screen bg-black text-white overflow-hidden pt-16 md:pt-20">
       
-      {/* Premium Ambient Radial Background Glows */}
-      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[550px] h-[550px] bg-[#10B981]/10 rounded-full blur-[160px] pointer-events-none" />
-
-      {/* Top Header Row */}
-      <header className="w-full max-w-6xl mx-auto flex items-center justify-between z-10 relative">
-        <div className="flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-gradient-to-br from-[#A7F3D0]/20 to-[#10B981]/5 border border-white/[0.1] flex items-center justify-center shadow-[0_0_15px_rgba(167,243,208,0.1)]">
-            <Sparkles className="size-5 text-[#34D399] drop-shadow-[0_0_8px_rgba(52,211,153,0.4)]" />
-          </div>
-          <div>
-            <span className="font-extrabold text-base tracking-tight block">SplitSettle</span>
-            <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase">Ecosystem Space</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 bg-white/[0.02] border border-white/[0.08] px-3.5 py-1.5 rounded-full backdrop-blur-md">
-          <span className="size-2 rounded-full bg-[#34D399] animate-ping" />
-          v1.1.0 Dev Active
-        </div>
-      </header>
-
-      {/* Main Feature Content Container */}
-      <main className="w-full max-w-4xl mx-auto my-auto z-10 relative py-12 space-y-12">
+      {/* LEFT SIDEBAR: Chat & Group List */}
+      <div className="w-full md:w-[380px] lg:w-[420px] bg-[#0a0a0a] border-r border-[#2ee6a8]/20 flex flex-col h-full">
         
-        {/* Core Notice and Header Title */}
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-xs font-semibold text-amber-400">
-            <Construction className="size-4 animate-spin" />
-            Ecosystem Under Active Construction
-          </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white">
-            We are crafting <br />
-            <span className="bg-gradient-to-r from-[#A7F3D0] to-[#10B981] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(52,211,153,0.2)]">
-              The Next-Gen Split Engine
+        {/* Search Bar */}
+        <div className="p-3 bg-[#0a0a0a] pt-4">
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-white/40">
+              <Search className="w-4 h-4 text-[#2ee6a8]" />
             </span>
-          </h1>
-          <p className="text-gray-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-            SplitSettle's underlying secure logic structures are compiling cleanly. We are actively sculpting live transactional ledgers and simplifying your multi-person debt networks.
-          </p>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search or start new chat"
+              className="w-full bg-black border border-[#2ee6a8]/30 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#2ee6a8]"
+            />
+          </div>
         </div>
 
-        {/* Dynamic Glassmorphic Core Container Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-          
-          {/* Left Panel: Tasks Roadmap Tracker */}
-          <div className="md:col-span-7 bg-white/[0.02] border border-white/[0.06] backdrop-blur-xl p-6 rounded-3xl flex flex-col justify-between shadow-2xl relative">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-                <h3 className="font-bold text-sm tracking-wide text-white">Milestone Register</h3>
+        {/* Chat List Scrollable Area */}
+        <div className="flex-1 overflow-y-auto divide-y divide-[#2ee6a8]/10 mt-1">
+          {filteredChats.length === 0 ? (
+            <p className="text-white/40 text-xs text-center py-8">No chats or groups found.</p>
+          ) : (
+            filteredChats.map((chat) => (
+              <div
+                key={chat._id}
+                onClick={() => setActiveChat(chat)}
+                className={`flex items-center gap-3 p-3.5 cursor-pointer transition-colors ${
+                  activeChat?._id === chat._id ? 'bg-[#2ee6a8]/10 border-l-4 border-[#2ee6a8]' : 'hover:bg-black/40'
+                }`}
+              >
+                <div className="relative">
+                  <img 
+                    src={chat.profilePic || "/avatar.png"} 
+                    alt="" 
+                    className="w-12 h-12 rounded-full object-cover border border-[#2ee6a8]/30"
+                  />
+                </div>
                 
-                {/* Custom Segmented Tabs */}
-                <div className="flex bg-white/[0.03] p-1 rounded-xl border border-white/[0.05]">
-                  <button 
-                    onClick={() => setActiveTab('completed')}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-300 ${activeTab === 'completed' ? 'bg-[#34D399] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
-                  >
-                    Completed
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('pending')}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-300 ${activeTab === 'pending' ? 'bg-[#34D399] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
-                  >
-                    Pending
-                  </button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className="text-sm font-semibold truncate text-white">{chat.name}</h4>
+                    <span className="text-[10px] text-white/40">{chat.time}</span>
+                  </div>
+                  <p className="text-xs text-white/60 truncate">{chat.lastMessage}</p>
+                </div>
+
+                {chat.unreadCount > 0 && (
+                  <span className="bg-[#2ee6a8] text-black text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {chat.unreadCount}
+                  </span>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* RIGHT MAIN PANEL: Active Chat Window or Splash Screen */}
+      <div className="flex-1 flex flex-col bg-black h-full">
+        {activeChat ? (
+          <>
+            {/* Chat Top Nav */}
+            <div className="h-16 px-6 bg-[#0a0a0a] border-b border-[#2ee6a8]/20 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img 
+                  src={activeChat.profilePic || "/avatar.png"} 
+                  alt="" 
+                  className="w-10 h-10 rounded-full object-cover border border-[#2ee6a8]/30"
+                />
+                <div>
+                  <h3 className="text-sm font-semibold text-white">{activeChat.name}</h3>
+                  <p className="text-[10px] text-[#2ee6a8] font-mono">
+                    {activeChat.isGroup ? activeChat.members?.map(m => m.name).join(', ') : 'online'}
+                  </p>
                 </div>
               </div>
 
-              {/* Task Cards Matrix */}
-              <div className="space-y-3 min-h-[180px]">
-                {filteredTasks.map(task => (
-                  <div key={task.id} className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04] flex items-start gap-3 hover:border-white/[0.08] transition-colors">
-                    {task.category === 'completed' ? (
-                      <CheckCircle2 className="size-5 text-[#34D399] shrink-0 mt-0.5" />
-                    ) : (
-                      <Circle className="size-5 text-gray-600 shrink-0 mt-0.5" />
-                    )}
-                    <div>
-                      <h4 className="text-xs font-bold text-white">{task.title}</h4>
-                      <p className="text-[11px] text-gray-400 leading-normal mt-0.5">{task.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Right Panel: Subscription & Simulated Live Logs */}
-          <div className="md:col-span-5 flex flex-col gap-6">
-            
-            {/* Subscription Form card */}
-            <div className="bg-white/[0.02] border border-white/[0.06] backdrop-blur-xl p-6 rounded-3xl flex flex-col justify-between shadow-2xl relative overflow-hidden">
-              <div className="space-y-4">
-                <h3 className="font-bold text-sm tracking-wide text-white">Be The First To Know</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  Join our pool of developers and alpha testers. Get an automatic ping when SplitSettle dashboard interfaces deploy.
-                </p>
-
-                {isSubscribed ? (
-                  <div className="bg-[#34D399]/10 border border-[#34D399]/20 p-4 rounded-2xl text-center space-y-1.5 animate-fadeIn">
-                    <CheckCircle2 className="size-7 text-[#34D399] mx-auto" />
-                    <h4 className="text-xs font-bold">Successfully Registered!</h4>
-                    <p className="text-gray-400 text-[10px]">We will notify you instantly at launch.</p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleNotifySubmit} className="space-y-2">
-                    <div className="relative">
-                      <input 
-                        type="email"
-                        value={notifyEmail}
-                        onChange={(e) => setNotifyEmail(e.target.value)}
-                        required
-                        placeholder="developer@splitsettle.io"
-                        className="w-full bg-white/[0.03] border border-white/[0.08] text-xs text-white rounded-xl py-3 pl-3 pr-10 outline-none focus:border-[#34D399] focus:ring-1 focus:ring-[#34D399] transition-all"
-                      />
-                      <button type="submit" className="absolute top-1/2 -translate-y-1/2 right-1.5 p-2 bg-[#34D399] hover:bg-[#10B981] text-black rounded-lg transition-colors">
-                        <Send className="size-3" />
-                      </button>
-                    </div>
-                    <p className="text-[10px] text-gray-500 text-center">Spam-free direct delivery logs only.</p>
-                  </form>
-                )}
+              <div className="flex items-center gap-4 text-white/70">
+                <button className="hover:text-[#2ee6a8] cursor-pointer" title="Voice Call"><Phone className="w-5 h-5" /></button>
+                <button className="hover:text-[#2ee6a8] cursor-pointer" title="Video Call"><Video className="w-5 h-5" /></button>
+                <button className="hover:text-[#2ee6a8] cursor-pointer" title="Group Info"><Info className="w-5 h-5" /></button>
               </div>
             </div>
 
-            {/* Live Developer console terminal logs */}
-            <div className="bg-zinc-950/90 border border-white/[0.08] p-5 rounded-3xl font-mono text-[10px] text-gray-400 flex flex-col gap-2 shadow-inner relative flex-1 min-h-[140px]">
-              <div className="flex items-center gap-1.5 border-b border-white/[0.06] pb-2 mb-1 shrink-0">
-                <Terminal className="size-3.5 text-[#34D399]" />
-                <span className="text-white text-[9px] font-bold uppercase tracking-wider">Dev Console Stream</span>
-              </div>
-              <div className="space-y-1.5 flex-1 flex flex-col justify-end">
-                {terminalLogs.map((log, i) => (
-                  <p 
-                    key={i} 
-                    className={`truncate ${
-                      log.includes('SUCCESS') ? 'text-[#34D399]' : log.includes('INFO') ? 'text-blue-400' : 'text-gray-400'
+            {/* Messages Area */}
+            <div className="flex-1 p-6 overflow-y-auto space-y-4 bg-black">
+              {messages.map((msg) => (
+                <div
+                  key={msg._id}
+                  className={`flex flex-col ${msg.isSender ? 'items-end' : 'items-start'}`}
+                >
+                  <div
+                    className={`max-w-md px-4 py-2.5 rounded-2xl text-xs md:text-sm ${
+                      msg.isSender
+                        ? 'bg-[#2ee6a8] text-black font-medium rounded-tr-none'
+                        : 'bg-[#0a0a0a] border border-[#2ee6a8]/30 text-white rounded-tl-none'
                     }`}
                   >
-                    {log}
-                  </p>
-                ))}
-              </div>
+                    {msg.text}
+                  </div>
+                  <span className="text-[10px] text-white/40 mt-1 px-1">{msg.time}</span>
+                </div>
+              ))}
             </div>
 
+            {/* Message Input Bar */}
+            <form onSubmit={handleSendMessage} className="p-4 bg-[#0a0a0a] border-t border-[#2ee6a8]/20 flex items-center gap-3">
+              <button type="button" className="text-white/60 hover:text-[#2ee6a8] cursor-pointer">
+                <Smile className="w-6 h-6" />
+              </button>
+              <button type="button" className="text-white/60 hover:text-[#2ee6a8] cursor-pointer">
+                <ImageIcon className="w-6 h-6" />
+              </button>
+              <input
+                type="text"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                placeholder="Type a message..."
+                className="flex-1 bg-black border border-[#2ee6a8]/30 rounded-xl px-4 py-3 text-xs md:text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#2ee6a8]"
+              />
+              <button
+                type="submit"
+                className="bg-[#2ee6a8] hover:bg-[#25b888] text-black p-3 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </form>
+          </>
+        ) : (
+          /* Empty State Splash Screen */
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-black">
+            <div className="w-20 h-20 rounded-full bg-[#2ee6a8]/10 border border-[#2ee6a8]/30 flex items-center justify-center text-[#2ee6a8] mb-4">
+              <MessageSquare className="w-10 h-10" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">SplitSettle</h2>
+            <p className="text-xs text-white/60 max-w-sm">
+              Select Any Group From The Left Sidebar To Find The Trip Expenses.
+            </p>
           </div>
-        </div>
-
-      </main>
-
-      {/* Footer Branding Coordinates */}
-      <footer className="w-full max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/[0.06] pt-6 z-10 relative">
-        <p className="text-[10px] text-gray-500 font-medium">
-          &copy; {new Date().getFullYear()} SplitSettle Technologies. All rights reserved.
-        </p>
-        <div className="flex gap-4">
-          <a href="https://github.com" target="_blank" rel="noreferrer" className="text-[10px] text-gray-400 hover:text-[#34D399] flex items-center gap-1 transition-colors">
-            Source Control <ExternalLink className="size-3" />
-          </a>
-          <span className="text-gray-700 text-[10px]">|</span>
-          <span className="text-[10px] text-gray-400 flex items-center gap-1">
-            Built Secure <Lock className="size-3 text-[#34D399]" />
-          </span>
-        </div>
-      </footer>
+        )}
+      </div>
 
     </div>
   );

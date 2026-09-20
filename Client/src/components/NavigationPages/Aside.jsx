@@ -4,7 +4,8 @@ import {
   Users, 
   Receipt, 
   Info, 
-  Settings 
+  Settings, 
+  Plus
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -68,6 +69,18 @@ const AsideNav = ({ user }) => {
 
       {/* Bottom Icons: Settings & User Avatar */}
       <div className="flex flex-col items-center space-y-3 w-full">
+         <Link 
+          to="/createGroup" 
+          title="Create Group" 
+          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+            currentPath === '/profile' 
+              ? 'bg-[#2ee6a8]/25 text-[#2ee6a8] border border-[#2ee6a8]/60 shadow-inner' 
+              : 'bg-[#2ee6a8]/15 text-[#2ee6a8] border border-[#2ee6a8]/40 hover:bg-[#2ee6a8]/25'
+          }`}
+        >
+          <Plus className="w-5 h-5" />
+        </Link>
+
         <Link 
           to="/profile" 
           title="Account Profile" 
